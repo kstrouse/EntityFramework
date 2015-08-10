@@ -63,6 +63,17 @@ namespace Microsoft.Data.Entity.Query
 
         public virtual RelationalQueryModelVisitor ParentQueryModelVisitor { get; }
 
+
+        public override Func<QueryContext, IEnumerable<TResult>> CreateQueryExecutor<TResult>([NotNull] QueryModel queryModel)
+        {
+            return base.CreateQueryExecutor<TResult>(queryModel);
+        }
+
+        public override Func<QueryContext, IAsyncEnumerable<TResult>> CreateAsyncQueryExecutor<TResult>([NotNull] QueryModel queryModel)
+        {
+            return base.CreateAsyncQueryExecutor<TResult>(queryModel);
+        }
+
         public virtual void RegisterSubQueryVisitor(
             [NotNull] IQuerySource querySource, [NotNull] RelationalQueryModelVisitor queryModelVisitor)
         {
@@ -96,13 +107,6 @@ namespace Microsoft.Data.Entity.Query
             return (_queriesBySource.TryGetValue(querySource, out selectExpression)
                 ? selectExpression
                 : _queriesBySource.Values.SingleOrDefault(se => se.HandlesQuerySource(querySource)));
-        }
-
-        protected override ExpressionVisitor CreateQueryingExpressionVisitor(IQuerySource querySource)
-        {
-            Check.NotNull(querySource, nameof(querySource));
-
-            return new RelationalEntityQueryableExpressionVisitor(this, querySource);
         }
 
         protected override ExpressionVisitor CreateProjectionExpressionVisitor(IQuerySource querySource)
@@ -247,7 +251,7 @@ namespace Microsoft.Data.Entity.Query
                                 fromClause,
                                 QueryCompilationContext,
                                 readerOffset,
-                                LinqOperatorProvider.SelectMany)
+                                QueryCompilationContext.LinqOperatorProvider.SelectMany)
                                 .Visit(Expression);
 
                         RequiresClientSelectMany = false;
@@ -294,7 +298,7 @@ namespace Microsoft.Data.Entity.Query
                 queryModel,
                 index,
                 () => base.VisitJoinClause(joinClause, queryModel, index),
-                LinqOperatorProvider.Join);
+                QueryCompilationContext.LinqOperatorProvider.Join);
         }
 
         protected override Expression CompileJoinClauseInnerSequenceExpression(JoinClause joinClause, QueryModel queryModel)
@@ -317,7 +321,7 @@ namespace Microsoft.Data.Entity.Query
                 queryModel,
                 index,
                 () => base.VisitGroupJoinClause(groupJoinClause, queryModel, index),
-                LinqOperatorProvider.GroupJoin,
+                QueryCompilationContext.LinqOperatorProvider.GroupJoin,
                 outerJoin: true);
         }
 

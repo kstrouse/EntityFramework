@@ -41,7 +41,7 @@ namespace Microsoft.Data.Entity.Query.Sql
 
         public virtual SelectExpression SelectExpression => _selectExpression;
 
-        public virtual IRelationalTypeMapper TypeMapper { get; }
+        protected virtual IRelationalTypeMapper TypeMapper { get; }
 
         public virtual IReadOnlyList<CommandParameter> Parameters => _commandParameters;
 

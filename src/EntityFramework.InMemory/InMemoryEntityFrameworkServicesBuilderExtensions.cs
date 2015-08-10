@@ -8,6 +8,7 @@ using Microsoft.Data.Entity.InMemory;
 using Microsoft.Data.Entity.Query;
 using Microsoft.Data.Entity.Storage;
 using Microsoft.Data.Entity.Utilities;
+using Microsoft.Data.Entity.Query.ExpressionVisitors;
 
 // ReSharper disable once CheckNamespace
 
@@ -41,7 +42,9 @@ namespace Microsoft.Framework.DependencyInjection
         {
             return serviceCollection
                 .AddScoped<InMemoryQueryContextFactory>()
-                .AddScoped<InMemoryQueryCompilationContextFactory>();
+                .AddScoped<InMemoryQueryCompilationContextFactory>()
+                .AddScoped<InMemoryQueryingExpressionVisitor>()
+                .AddTransient<InMemoryQueryCompilationContext>();
         }
     }
 }

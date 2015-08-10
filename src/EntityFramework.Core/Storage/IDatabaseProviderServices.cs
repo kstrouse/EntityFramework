@@ -5,6 +5,7 @@ using Microsoft.Data.Entity.Infrastructure;
 using Microsoft.Data.Entity.Internal;
 using Microsoft.Data.Entity.Metadata.Conventions.Internal;
 using Microsoft.Data.Entity.Query;
+using Microsoft.Data.Entity.Query.ExpressionVisitors;
 using Microsoft.Data.Entity.ValueGeneration;
 
 namespace Microsoft.Data.Entity.Storage
@@ -21,6 +22,11 @@ namespace Microsoft.Data.Entity.Storage
         IValueGeneratorCache ValueGeneratorCache { get; }
         IQueryContextFactory QueryContextFactory { get; }
         IQueryCompilationContextFactory QueryCompilationContextFactory { get; }
+
         ICompiledQueryCacheKeyGenerator CompiledQueryCacheKeyGenerator { get; }
+        IResultOperatorHandler ResultOperatorHandler { get; }
+        IQueryAnnotationExtractor QueryAnnotationExtractor { get; }
+        IQueryOptimizer QueryOptimizer { get; }
+        IQueryingExpressionVisitor QueryingExpressionVisitor { get; }
     }
 }

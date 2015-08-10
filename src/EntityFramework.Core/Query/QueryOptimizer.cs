@@ -6,8 +6,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using JetBrains.Annotations;
+using Microsoft.Data.Entity.Internal;
 using Microsoft.Data.Entity.Query.Annotations;
+using Microsoft.Data.Entity.Query.ExpressionVisitors;
 using Microsoft.Data.Entity.Utilities;
+using Microsoft.Framework.Logging;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
@@ -17,7 +20,7 @@ using Remotion.Linq.Transformations;
 
 namespace Microsoft.Data.Entity.Query
 {
-    public class QueryOptimizer : SubQueryFromClauseFlattener
+    public class QueryOptimizer : SubQueryFromClauseFlattener, IQueryOptimizer
     {
         private class FromClauseData : IFromClause
         {
@@ -45,13 +48,30 @@ namespace Microsoft.Data.Entity.Query
             }
         }
 
-        private readonly IReadOnlyCollection<QueryAnnotationBase> _queryAnnotations;
+        private IReadOnlyCollection<QueryAnnotationBase> _queryAnnotations;
 
-        public QueryOptimizer([NotNull] IReadOnlyCollection<QueryAnnotationBase> queryAnnotations)
+        public virtual void OptimizeQuery(
+            [NotNull] QueryCompilationContext queryCompilationContext,
+            [NotNull] EntityQueryModelVisitor queryModelVisitor,
+            [NotNull] QueryModel queryModel)
         {
-            Check.NotNull(queryAnnotations, nameof(queryAnnotations));
+            Check.NotNull(queryCompilationContext, nameof(queryCompilationContext));
+            Check.NotNull(queryModelVisitor, nameof(queryModelVisitor));
+            Check.NotNull(queryModel, nameof(queryModel));
 
-            _queryAnnotations = queryAnnotations;
+            _queryAnnotations = queryCompilationContext.QueryAnnotations;
+
+            VisitQueryModel(queryModel);
+
+            var navigationRewritingExpressionTreeVisitor = new NavigationRewritingExpressionVisitor(queryModelVisitor);
+
+            navigationRewritingExpressionTreeVisitor.Rewrite(queryModel);
+
+            var subQueryMemberPushDownExpressionVisitor = new SubQueryMemberPushDownExpressionVisitor();
+
+            queryModel.TransformExpressions(subQueryMemberPushDownExpressionVisitor.Visit);
+
+            queryCompilationContext.Logger.LogInformation(queryModel, Strings.LogOptimizedQueryModel);
         }
 
         public override void VisitJoinClause(JoinClause joinClause, QueryModel queryModel, int index)

@@ -19,21 +19,21 @@ namespace Microsoft.Data.Entity.Storage
     public abstract class Database : IDatabase
     {
         private readonly LazyRef<ILogger> _logger;
-        private readonly IQueryCompilationContextFactory _compilationContextFactory;
+        private readonly IQueryModelCompiler _queryModelCompiler;
 
         protected Database(
             [NotNull] IModel model,
             [NotNull] ILoggerFactory loggerFactory,
-            [NotNull] IQueryCompilationContextFactory compilationContextFactory)
+            [NotNull] IQueryModelCompiler queryModelCompiler)
         {
             Check.NotNull(model, nameof(model));
             Check.NotNull(loggerFactory, nameof(loggerFactory));
-            Check.NotNull(compilationContextFactory, nameof(compilationContextFactory));
+            Check.NotNull(queryModelCompiler, nameof(queryModelCompiler));
 
             Model = model;
 
             _logger = new LazyRef<ILogger>(loggerFactory.CreateLogger<Database>);
-            _compilationContextFactory = compilationContextFactory;
+            _queryModelCompiler = queryModelCompiler;
         }
 
         public virtual IModel Model { get; }
@@ -47,15 +47,11 @@ namespace Microsoft.Data.Entity.Storage
             CancellationToken cancellationToken = default(CancellationToken));
 
         public virtual Func<QueryContext, IEnumerable<TResult>> CompileQuery<TResult>(QueryModel queryModel)
-            => _compilationContextFactory.CreateContext()
-                .CreateQueryModelVisitor()
-                .CreateQueryExecutor<TResult>(
-                    Check.NotNull(queryModel, nameof(queryModel)));
+            => _queryModelCompiler.CreateQueryExecutor<TResult>(
+                Check.NotNull(queryModel, nameof(queryModel)));
 
         public virtual Func<QueryContext, IAsyncEnumerable<TResult>> CompileAsyncQuery<TResult>(QueryModel queryModel)
-            => _compilationContextFactory.CreateAsyncContext()
-                .CreateQueryModelVisitor()
-                .CreateAsyncQueryExecutor<TResult>(
-                    Check.NotNull(queryModel, nameof(queryModel)));
+            => _queryModelCompiler.CreateAsyncQueryExecutor<TResult>(
+                Check.NotNull(queryModel, nameof(queryModel)));
     }
 }

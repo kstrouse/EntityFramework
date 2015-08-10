@@ -218,7 +218,9 @@
     <Compile Include="Query\Annotations\IncludeQueryAnnotation.cs" />
     <Compile Include="EF.cs" />
     <Compile Include="Query\CompiledQueryCacheKeyGenerator.cs" />
+    <Compile Include="Query\ExpressionVisitors\IQueryingExpressionVisitor.cs" />
     <Compile Include="Query\ICompiledQueryCacheKeyGenerator.cs" />
+    <Compile Include="Query\IQueryAnnotationExtractor.cs" />
     <Compile Include="Query\IQueryCompiler.cs" />
     <Compile Include="Query\EntityLoadInfo.cs" />
     <Compile Include="Query\EntityTrackingInfo.cs" />
@@ -235,11 +237,14 @@
     <Compile Include="Query\IIncludableQueryable.cs" />
     <Compile Include="Query\Internal\IExpressionPrinter.cs" />
     <Compile Include="Query\IQueryExecutor.cs" />
+    <Compile Include="Query\IQueryModelCompiler.cs" />
+    <Compile Include="Query\IQueryOptimizer.cs" />
     <Compile Include="Query\IQueryPreprocessor.cs" />
     <Compile Include="Query\QueryableHelpers.cs" />
     <Compile Include="Query\QueryAnnotationMethodAttribute.cs" />
     <Compile Include="Query\QueryCompiler.cs" />
     <Compile Include="Query\QueryExecutor.cs" />
+    <Compile Include="Query\QueryModelCompiler.cs" />
     <Compile Include="Query\QueryPreprocessor.cs" />
     <Compile Include="Query\SharedQueryExtensions.cs" />
     <Compile Include="DbSet`.cs" />

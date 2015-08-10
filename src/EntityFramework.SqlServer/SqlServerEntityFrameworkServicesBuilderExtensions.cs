@@ -3,7 +3,7 @@
 
 using JetBrains.Annotations;
 using Microsoft.Data.Entity.Infrastructure;
-using Microsoft.Data.Entity.Query;
+using Microsoft.Data.Entity.Query.Sql;
 using Microsoft.Data.Entity.SqlServer;
 using Microsoft.Data.Entity.SqlServer.Metadata;
 using Microsoft.Data.Entity.SqlServer.Migrations;
@@ -54,7 +54,8 @@ namespace Microsoft.Framework.DependencyInjection
         private static IServiceCollection AddQuery(this IServiceCollection serviceCollection)
         {
             return serviceCollection
-                .AddScoped<SqlServerQueryCompilationContextFactory>();
+                .AddScoped<SqlServerQuerySqlGeneratorFactory>()
+                .AddTransient<SqlServerQuerySqlGenerator>();
         }
     }
 }

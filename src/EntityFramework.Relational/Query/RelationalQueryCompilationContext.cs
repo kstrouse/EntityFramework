@@ -1,7 +1,6 @@
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
@@ -9,6 +8,7 @@ using Microsoft.Data.Entity.ChangeTracking.Internal;
 using Microsoft.Data.Entity.Metadata;
 using Microsoft.Data.Entity.Metadata.Internal;
 using Microsoft.Data.Entity.Query.Expressions;
+using Microsoft.Data.Entity.Query.ExpressionVisitors;
 using Microsoft.Data.Entity.Query.Internal;
 using Microsoft.Data.Entity.Query.Methods;
 using Microsoft.Data.Entity.Query.Sql;
@@ -19,48 +19,64 @@ using Remotion.Linq.Clauses;
 
 namespace Microsoft.Data.Entity.Query
 {
-    public abstract class RelationalQueryCompilationContext : QueryCompilationContext
+    public class RelationalQueryCompilationContext : QueryCompilationContext
     {
         private readonly List<RelationalQueryModelVisitor> _relationalQueryModelVisitors
             = new List<RelationalQueryModelVisitor>();
 
-        protected RelationalQueryCompilationContext(
+        private readonly ISqlQueryGeneratorFactory _sqlQueryGeneratorFactory;
+        private IQueryMethodProvider _queryMethodProvider;
+
+        public RelationalQueryCompilationContext(
             [NotNull] IModel model,
-            [NotNull] ILogger logger,
-            [NotNull] ILinqOperatorProvider linqOperatorProvider,
+            [NotNull] ILoggerFactory loggerFactory,
             [NotNull] IResultOperatorHandler resultOperatorHandler,
             [NotNull] IEntityMaterializerSource entityMaterializerSource,
             [NotNull] IEntityKeyFactorySource entityKeyFactorySource,
             [NotNull] IClrAccessorSource<IClrPropertyGetter> clrPropertyGetterSource,
-            [NotNull] IQueryMethodProvider queryMethodProvider,
+            [NotNull] IQueryingExpressionVisitor queryingExpressionVisitor,
             [NotNull] IMethodCallTranslator compositeMethodCallTranslator,
             [NotNull] IMemberTranslator compositeMemberTranslator,
             [NotNull] IRelationalValueBufferFactoryFactory valueBufferFactoryFactory,
             [NotNull] IRelationalTypeMapper typeMapper,
-            [NotNull] IRelationalMetadataExtensionProvider relationalExtensions)
+            [NotNull] IRelationalMetadataExtensionProvider relationalExtensions,
+            [NotNull] ISqlQueryGeneratorFactory sqlQueryGeneratorFactory)
             : base(
                 model,
-                logger,
-                linqOperatorProvider,
+                loggerFactory,
                 resultOperatorHandler,
                 entityMaterializerSource,
                 entityKeyFactorySource,
-                clrPropertyGetterSource)
+                clrPropertyGetterSource,
+                queryingExpressionVisitor)
 
         {
-            Check.NotNull(queryMethodProvider, nameof(queryMethodProvider));
             Check.NotNull(compositeMethodCallTranslator, nameof(compositeMethodCallTranslator));
             Check.NotNull(compositeMemberTranslator, nameof(compositeMemberTranslator));
             Check.NotNull(valueBufferFactoryFactory, nameof(valueBufferFactoryFactory));
             Check.NotNull(typeMapper, nameof(typeMapper));
             Check.NotNull(relationalExtensions, nameof(relationalExtensions));
 
-            QueryMethodProvider = queryMethodProvider;
             CompositeMethodCallTranslator = compositeMethodCallTranslator;
             CompositeMemberTranslator = compositeMemberTranslator;
             ValueBufferFactoryFactory = valueBufferFactoryFactory;
             TypeMapper = typeMapper;
             RelationalExtensions = relationalExtensions;
+            _sqlQueryGeneratorFactory = sqlQueryGeneratorFactory;
+        }
+
+        public override void Initialize(bool isAsync)
+        {
+            base.Initialize(isAsync);
+
+            if (isAsync)
+            {
+                _queryMethodProvider = new AsyncQueryMethodProvider();
+            }
+            else
+            {
+                _queryMethodProvider = new QueryMethodProvider();
+            }
         }
 
         public override EntityQueryModelVisitor CreateQueryModelVisitor(
@@ -86,13 +102,23 @@ namespace Microsoft.Data.Entity.Query
 
             return
                 (from v in _relationalQueryModelVisitors
-                    let selectExpression = v.TryGetQuery(querySource)
-                    where selectExpression != null
-                    select selectExpression)
+                 let selectExpression = v.TryGetQuery(querySource)
+                 where selectExpression != null
+                 select selectExpression)
                     .First();
         }
 
-        public virtual IQueryMethodProvider QueryMethodProvider { get; }
+        public virtual IQueryMethodProvider QueryMethodProvider
+        {
+            get { return _queryMethodProvider; }
+            [param: NotNull]
+            set
+            {
+                Check.NotNull(value, nameof(value));
+
+                _queryMethodProvider = value;
+            }
+        }
 
         public virtual IMethodCallTranslator CompositeMethodCallTranslator { get; }
 
@@ -103,11 +129,7 @@ namespace Microsoft.Data.Entity.Query
         public virtual IRelationalTypeMapper TypeMapper { get; }
 
         public virtual ISqlQueryGenerator CreateSqlQueryGenerator([NotNull] SelectExpression selectExpression)
-        {
-            Check.NotNull(selectExpression, nameof(selectExpression));
-
-            return new DefaultQuerySqlGenerator(selectExpression, TypeMapper);
-        }
+            => _sqlQueryGeneratorFactory.Create(selectExpression);
 
         public virtual IRelationalMetadataExtensionProvider RelationalExtensions { get; }
     }

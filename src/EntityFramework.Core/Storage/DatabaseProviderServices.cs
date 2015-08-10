@@ -7,6 +7,7 @@ using Microsoft.Data.Entity.Infrastructure;
 using Microsoft.Data.Entity.Internal;
 using Microsoft.Data.Entity.Metadata.Conventions.Internal;
 using Microsoft.Data.Entity.Query;
+using Microsoft.Data.Entity.Query.ExpressionVisitors;
 using Microsoft.Data.Entity.Utilities;
 using Microsoft.Data.Entity.ValueGeneration;
 using Microsoft.Framework.DependencyInjection;
@@ -36,9 +37,13 @@ namespace Microsoft.Data.Entity.Storage
         public abstract IDatabaseCreator Creator { get; }
         public abstract IModelSource ModelSource { get; }
         public abstract IValueGeneratorCache ValueGeneratorCache { get; }
+
         public abstract IQueryContextFactory QueryContextFactory { get; }
         public abstract IQueryCompilationContextFactory QueryCompilationContextFactory { get; }
-        public virtual ICompiledQueryCacheKeyGenerator CompiledQueryCacheKeyGenerator
-            => GetService<CompiledQueryCacheKeyGenerator>();
+        public virtual ICompiledQueryCacheKeyGenerator CompiledQueryCacheKeyGenerator => GetService<CompiledQueryCacheKeyGenerator>();
+        public virtual IResultOperatorHandler ResultOperatorHandler => GetService<ResultOperatorHandler>();
+        public virtual IQueryAnnotationExtractor QueryAnnotationExtractor => GetService<QueryAnnotationExtractor>();
+        public virtual IQueryOptimizer QueryOptimizer => GetService<QueryOptimizer>();
+        public abstract IQueryingExpressionVisitor QueryingExpressionVisitor { get; }
     }
 }

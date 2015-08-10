@@ -654,11 +654,6 @@ namespace Microsoft.Data.Entity.Query.Expressions
             return this;
         }
 
-        public override string ToString()
-        {
-            return new DefaultQuerySqlGenerator(this, null).GenerateSql(new Dictionary<string, object>());
-        }
-
         // TODO: Make polymorphic
         public virtual Expression UpdateColumnExpression(
             [NotNull] Expression expression,

@@ -8,11 +8,11 @@ using Microsoft.Framework.DependencyInjection;
 
 namespace Microsoft.Data.Entity.Query
 {
-    public class InMemoryQueryCompilationContextFactory : IQueryCompilationContextFactory
+    public class RelationalQueryCompilationContextFactory : IQueryCompilationContextFactory
     {
         private readonly IServiceProvider _serviceProvider;
 
-        public InMemoryQueryCompilationContextFactory([NotNull] IServiceProvider serviceProvider)
+        public RelationalQueryCompilationContextFactory([NotNull] IServiceProvider serviceProvider)
         {
             Check.NotNull(serviceProvider, nameof(serviceProvider));
 
@@ -20,6 +20,6 @@ namespace Microsoft.Data.Entity.Query
         }
 
         public virtual QueryCompilationContext Create()
-            => _serviceProvider.GetService<InMemoryQueryCompilationContext>();
+            => _serviceProvider.GetService<RelationalQueryCompilationContext>();
     }
 }

@@ -11,6 +11,7 @@ using Microsoft.Data.Entity.Metadata.Internal;
 using Microsoft.Data.Entity.Query.Annotations;
 using Microsoft.Data.Entity.Query.ExpressionVisitors;
 using Microsoft.Data.Entity.Query.Internal;
+using Microsoft.Data.Entity.Storage;
 using Microsoft.Data.Entity.Utilities;
 using Microsoft.Framework.Logging;
 using Remotion.Linq;
@@ -20,43 +21,69 @@ namespace Microsoft.Data.Entity.Query
 {
     public abstract class QueryCompilationContext
     {
+        private ILinqOperatorProvider _linqOperatorProvider;
+
         private IReadOnlyCollection<QueryAnnotationBase> _queryAnnotations;
         private IDictionary<IQuerySource, List<IReadOnlyList<INavigation>>> _trackableIncludes;
         private ISet<IQuerySource> _querySourcesRequiringMaterialization;
 
         protected QueryCompilationContext(
             [NotNull] IModel model,
-            [NotNull] ILogger logger,
-            [NotNull] ILinqOperatorProvider linqOperatorProvider,
+            [NotNull] ILoggerFactory loggerFactory,
             [NotNull] IResultOperatorHandler resultOperatorHandler,
             [NotNull] IEntityMaterializerSource entityMaterializerSource,
             [NotNull] IEntityKeyFactorySource entityKeyFactorySource,
-            [NotNull] IClrAccessorSource<IClrPropertyGetter> clrPropertyGetterSource)
+            [NotNull] IClrAccessorSource<IClrPropertyGetter> clrPropertyGetterSource,
+            [NotNull] IQueryingExpressionVisitor queryingExpressionVisitor)
         {
             Check.NotNull(model, nameof(model));
-            Check.NotNull(logger, nameof(logger));
-            Check.NotNull(linqOperatorProvider, nameof(linqOperatorProvider));
+            Check.NotNull(loggerFactory, nameof(loggerFactory));
             Check.NotNull(resultOperatorHandler, nameof(resultOperatorHandler));
             Check.NotNull(entityMaterializerSource, nameof(entityMaterializerSource));
             Check.NotNull(entityKeyFactorySource, nameof(entityKeyFactorySource));
             Check.NotNull(clrPropertyGetterSource, nameof(clrPropertyGetterSource));
+            Check.NotNull(queryingExpressionVisitor, nameof(queryingExpressionVisitor));
 
             Model = model;
-            Logger = logger;
-            LinqOperatorProvider = linqOperatorProvider;
+            Logger = loggerFactory.CreateLogger<Database>();
             ResultOperatorHandler = resultOperatorHandler;
             EntityMaterializerSource = entityMaterializerSource;
             EntityKeyFactorySource = entityKeyFactorySource;
             ClrPropertyGetterSource = clrPropertyGetterSource;
+            QueryingExpressionVisitor = queryingExpressionVisitor;
+        }
+
+        public virtual void Initialize(bool isAsync)
+        {
+            if (isAsync)
+            {
+                _linqOperatorProvider = new AsyncLinqOperatorProvider();
+            }
+            else
+            {
+                _linqOperatorProvider = new LinqOperatorProvider();
+            }
         }
 
         public virtual IModel Model { get; }
         public virtual ILogger Logger { get; }
-        public virtual ILinqOperatorProvider LinqOperatorProvider { get; }
+        public virtual ILinqOperatorProvider LinqOperatorProvider
+        {
+            get { return _linqOperatorProvider; }
+            [param: NotNull]
+            set
+            {
+                Check.NotNull(value, nameof(value));
+
+                _linqOperatorProvider = value;
+            }
+        }
+
         public virtual IResultOperatorHandler ResultOperatorHandler { get; }
         public virtual IEntityMaterializerSource EntityMaterializerSource { get; }
         public virtual IEntityKeyFactorySource EntityKeyFactorySource { get; }
         public virtual IClrAccessorSource<IClrPropertyGetter> ClrPropertyGetterSource { get; }
+        public virtual IQueryingExpressionVisitor QueryingExpressionVisitor { get; }
 
         public virtual QuerySourceMapping QuerySourceMapping { get; } = new QuerySourceMapping();
 
