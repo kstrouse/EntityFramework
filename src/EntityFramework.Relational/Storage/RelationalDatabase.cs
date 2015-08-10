@@ -8,6 +8,7 @@ using JetBrains.Annotations;
 using Microsoft.Data.Entity.ChangeTracking.Internal;
 using Microsoft.Data.Entity.Infrastructure;
 using Microsoft.Data.Entity.Metadata;
+using Microsoft.Data.Entity.Query;
 using Microsoft.Data.Entity.Update;
 using Microsoft.Data.Entity.Utilities;
 using Microsoft.Framework.Logging;
@@ -24,11 +25,12 @@ namespace Microsoft.Data.Entity.Storage
         public RelationalDatabase(
             [NotNull] IModel model,
             [NotNull] ILoggerFactory loggerFactory,
+            [NotNull] IQueryCompilationContextFactory compilationContextFactory,
             [NotNull] ICommandBatchPreparer batchPreparer,
             [NotNull] IBatchExecutor batchExecutor,
             [NotNull] IRelationalConnection connection,
             [NotNull] IDbContextOptions options)
-            : base(model, loggerFactory)
+            : base(model, loggerFactory, compilationContextFactory)
         {
             Check.NotNull(batchPreparer, nameof(batchPreparer));
             Check.NotNull(batchExecutor, nameof(batchExecutor));

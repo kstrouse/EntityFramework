@@ -3,7 +3,6 @@
 
 using Microsoft.Data.Entity.InMemory;
 using Microsoft.Data.Entity.Query;
-using Microsoft.Data.Entity.Query.Compiler;
 using Microsoft.Data.Entity.Tests;
 
 namespace Microsoft.Data.Entity
@@ -25,7 +24,6 @@ namespace Microsoft.Data.Entity
             VerifyScoped<IInMemoryDatabase>();
             VerifyScoped<InMemoryDatabaseCreator>();
             VerifyScoped<InMemoryQueryContextFactory>();
-            VerifyScoped<InMemoryQueryCompiler>();
             VerifyScoped<InMemoryQueryCompilationContextFactory>();
 
         }

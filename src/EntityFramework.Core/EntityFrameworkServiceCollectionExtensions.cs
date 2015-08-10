@@ -10,8 +10,6 @@ using Microsoft.Data.Entity.Internal;
 using Microsoft.Data.Entity.Metadata.Conventions.Internal;
 using Microsoft.Data.Entity.Metadata.Internal;
 using Microsoft.Data.Entity.Query;
-using Microsoft.Data.Entity.Query.Compiler;
-using Microsoft.Data.Entity.Query.Preprocessor;
 using Microsoft.Data.Entity.Storage;
 using Microsoft.Data.Entity.Utilities;
 using Microsoft.Data.Entity.ValueGeneration;
@@ -124,10 +122,9 @@ namespace Microsoft.Framework.DependencyInjection
                 .AddScoped<IEntityQueryProvider, EntityQueryProvider>()
                 .AddScoped<IQueryExecutor, QueryExecutor>()
                 .AddScoped<IQueryPreprocessor, QueryPreprocessor>()
-                .AddScoped<QueryCompiler>()
+                .AddScoped<IQueryCompiler, QueryCompiler>()
                 .AddScoped<CompiledQueryCacheKeyGenerator>()
                 .AddScoped(p => GetProviderServices(p).QueryContextFactory)
-                .AddScoped(p => GetProviderServices(p).QueryCompiler)
                 .AddScoped(p => GetProviderServices(p).QueryCompilationContextFactory)
                 .AddScoped(p => GetProviderServices(p).CompiledQueryCacheKeyGenerator);
         }

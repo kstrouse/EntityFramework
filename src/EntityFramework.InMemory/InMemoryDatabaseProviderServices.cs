@@ -7,7 +7,6 @@ using JetBrains.Annotations;
 using Microsoft.Data.Entity.Infrastructure;
 using Microsoft.Data.Entity.InMemory;
 using Microsoft.Data.Entity.Query;
-using Microsoft.Data.Entity.Query.Compiler;
 using Microsoft.Data.Entity.Storage;
 using Microsoft.Data.Entity.ValueGeneration;
 
@@ -24,7 +23,6 @@ namespace Microsoft.Data.Entity
         public override IDatabase Database => GetService<IInMemoryDatabase>();
         public override IQueryCompilationContextFactory QueryCompilationContextFactory => GetService<InMemoryQueryCompilationContextFactory>();
         public override IQueryContextFactory QueryContextFactory => GetService<InMemoryQueryContextFactory>();
-        public override IQueryCompiler QueryCompiler => GetService<InMemoryQueryCompiler>();
         public override IDatabaseCreator Creator => GetService<InMemoryDatabaseCreator>();
         public override IValueGeneratorSelector ValueGeneratorSelector => GetService<InMemoryValueGeneratorSelector>();
         public override IModelSource ModelSource => GetService<InMemoryModelSource>();

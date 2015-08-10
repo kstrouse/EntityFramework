@@ -7,7 +7,7 @@ using Microsoft.Data.Entity.Metadata;
 using Microsoft.Data.Entity.Query.ExpressionVisitors;
 using Microsoft.Data.Entity.Utilities;
 
-namespace Microsoft.Data.Entity.Query.Compiler
+namespace Microsoft.Data.Entity.Query
 {
     public class CompiledQueryCacheKeyGenerator : ICompiledQueryCacheKeyGenerator
     {

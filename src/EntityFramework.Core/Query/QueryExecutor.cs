@@ -1,14 +1,11 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using Microsoft.Data.Entity.Query.Compiler;
-using Microsoft.Data.Entity.Query.Preprocessor;
 using Microsoft.Data.Entity.Utilities;
 using System.Linq;
 
@@ -44,7 +41,7 @@ namespace Microsoft.Data.Entity.Query
 
             var compiledQuery = _compiler.CompileQuery<TResult>(query);
 
-            return ((Func<QueryContext, TResult>)compiledQuery.Executor)(queryContext);
+            return compiledQuery(queryContext);
         }
 
         public virtual IAsyncEnumerable<TResult> ExecuteAsync<TResult>([NotNull] Expression query)
@@ -57,7 +54,7 @@ namespace Microsoft.Data.Entity.Query
 
             var compiledQuery = _compiler.CompileAsyncQuery<TResult>(query);
 
-            return ((Func<QueryContext, IAsyncEnumerable<TResult>>)compiledQuery.Executor)(queryContext);
+            return compiledQuery(queryContext);
         }
 
         public virtual Task<TResult> ExecuteAsync<TResult>([NotNull] Expression query, CancellationToken cancellationToken)
@@ -71,7 +68,7 @@ namespace Microsoft.Data.Entity.Query
 
             var compiledQuery = _compiler.CompileAsyncQuery<TResult>(query);
 
-            return ((Func<QueryContext, IAsyncEnumerable<TResult>>)compiledQuery.Executor)(queryContext)
+            return compiledQuery(queryContext)
                 .First(cancellationToken);
         }
     }

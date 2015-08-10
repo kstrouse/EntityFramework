@@ -2,11 +2,12 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using JetBrains.Annotations;
 using Microsoft.Data.Entity.Utilities;
 using Microsoft.Framework.Caching.Memory;
 
-namespace Microsoft.Data.Entity.Query.Compiler
+namespace Microsoft.Data.Entity.Query
 {
     public class CompiledQueryCache : ICompiledQueryCache
     {
@@ -23,11 +24,28 @@ namespace Microsoft.Data.Entity.Query.Compiler
             _memoryCache = memoryCache;
         }
 
-        public virtual CompiledQuery GetOrAdd(
+        public virtual Func<QueryContext, TResult> GetOrAddQuery<TResult>(
             [NotNull] string cacheKey,
-            [NotNull] Func<CompiledQuery> compiler)
+            [NotNull] Func<Func<QueryContext, TResult>> compiler)
         {
-            CompiledQuery compiledQuery;
+            Func<QueryContext, TResult> compiledQuery;
+            lock (_compiledQueryLockObject)
+            {
+                if (!_memoryCache.TryGetValue(cacheKey, out compiledQuery))
+                {
+                    compiledQuery = compiler();
+                    _memoryCache.Set(cacheKey, compiledQuery);
+                }
+            }
+
+            return compiledQuery;
+        }
+
+        public virtual Func<QueryContext, IAsyncEnumerable<TResult>> GetOrAddAsyncQuery<TResult>(
+            [NotNull] string cacheKey,
+            [NotNull] Func<Func<QueryContext, IAsyncEnumerable<TResult>>> compiler)
+        {
+            Func<QueryContext, IAsyncEnumerable<TResult>> compiledQuery;
             lock (_compiledQueryLockObject)
             {
                 if (!_memoryCache.TryGetValue(cacheKey, out compiledQuery))

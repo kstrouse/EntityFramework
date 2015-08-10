@@ -11,8 +11,6 @@ using Microsoft.Data.Entity.Metadata;
 using Microsoft.Data.Entity.Metadata.Conventions.Internal;
 using Microsoft.Data.Entity.Metadata.Internal;
 using Microsoft.Data.Entity.Query;
-using Microsoft.Data.Entity.Query.Compiler;
-using Microsoft.Data.Entity.Query.Preprocessor;
 using Microsoft.Data.Entity.Storage;
 using Microsoft.Data.Entity.ValueGeneration;
 using Microsoft.Framework.Caching.Memory;
@@ -99,7 +97,6 @@ namespace Microsoft.Data.Entity.Tests
             VerifyScoped<IQueryPreprocessor>();
             VerifyScoped<IQueryContextFactory>();
             VerifyScoped<IQueryCompiler>();
-            VerifyScoped<QueryCompiler>();
             VerifyScoped<IQueryCompilationContextFactory>();
             VerifyScoped<ICompiledQueryCacheKeyGenerator>();
             VerifyScoped<CompiledQueryCacheKeyGenerator>();

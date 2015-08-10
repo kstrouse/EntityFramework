@@ -4,7 +4,7 @@
 using System.Linq.Expressions;
 using JetBrains.Annotations;
 
-namespace Microsoft.Data.Entity.Query.Compiler
+namespace Microsoft.Data.Entity.Query
 {
     public interface ICompiledQueryCacheKeyGenerator
     {
