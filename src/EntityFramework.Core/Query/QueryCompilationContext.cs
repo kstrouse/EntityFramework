@@ -5,9 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using JetBrains.Annotations;
-using Microsoft.Data.Entity.ChangeTracking.Internal;
 using Microsoft.Data.Entity.Metadata;
-using Microsoft.Data.Entity.Metadata.Internal;
 using Microsoft.Data.Entity.Query.Annotations;
 using Microsoft.Data.Entity.Query.ExpressionVisitors;
 using Microsoft.Data.Entity.Query.Internal;
@@ -28,29 +26,14 @@ namespace Microsoft.Data.Entity.Query
         private ISet<IQuerySource> _querySourcesRequiringMaterialization;
 
         protected QueryCompilationContext(
-            [NotNull] IModel model,
-            [NotNull] ILoggerFactory loggerFactory,
-            [NotNull] IResultOperatorHandler resultOperatorHandler,
-            [NotNull] IEntityMaterializerSource entityMaterializerSource,
-            [NotNull] IEntityKeyFactorySource entityKeyFactorySource,
-            [NotNull] IClrAccessorSource<IClrPropertyGetter> clrPropertyGetterSource,
-            [NotNull] IQueryingExpressionVisitor queryingExpressionVisitor)
+            [NotNull] QueryCompilationContextServices services,
+            [NotNull] ILoggerFactory loggerFactory)
         {
-            Check.NotNull(model, nameof(model));
+            Check.NotNull(services, nameof(services));
             Check.NotNull(loggerFactory, nameof(loggerFactory));
-            Check.NotNull(resultOperatorHandler, nameof(resultOperatorHandler));
-            Check.NotNull(entityMaterializerSource, nameof(entityMaterializerSource));
-            Check.NotNull(entityKeyFactorySource, nameof(entityKeyFactorySource));
-            Check.NotNull(clrPropertyGetterSource, nameof(clrPropertyGetterSource));
-            Check.NotNull(queryingExpressionVisitor, nameof(queryingExpressionVisitor));
 
-            Model = model;
+            Services = services;
             Logger = loggerFactory.CreateLogger<Database>();
-            ResultOperatorHandler = resultOperatorHandler;
-            EntityMaterializerSource = entityMaterializerSource;
-            EntityKeyFactorySource = entityKeyFactorySource;
-            ClrPropertyGetterSource = clrPropertyGetterSource;
-            QueryingExpressionVisitor = queryingExpressionVisitor;
         }
 
         public virtual void Initialize(bool isAsync)
@@ -65,7 +48,8 @@ namespace Microsoft.Data.Entity.Query
             }
         }
 
-        public virtual IModel Model { get; }
+        public virtual QueryCompilationContextServices Services { get; }
+
         public virtual ILogger Logger { get; }
         public virtual ILinqOperatorProvider LinqOperatorProvider
         {
@@ -78,12 +62,6 @@ namespace Microsoft.Data.Entity.Query
                 _linqOperatorProvider = value;
             }
         }
-
-        public virtual IResultOperatorHandler ResultOperatorHandler { get; }
-        public virtual IEntityMaterializerSource EntityMaterializerSource { get; }
-        public virtual IEntityKeyFactorySource EntityKeyFactorySource { get; }
-        public virtual IClrAccessorSource<IClrPropertyGetter> ClrPropertyGetterSource { get; }
-        public virtual IQueryingExpressionVisitor QueryingExpressionVisitor { get; }
 
         public virtual QuerySourceMapping QuerySourceMapping { get; } = new QuerySourceMapping();
 

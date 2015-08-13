@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using Microsoft.Data.Entity.Metadata;
 using Microsoft.Data.Entity.Query.Expressions;
 using Microsoft.Data.Entity.Query.ExpressionVisitors;
@@ -303,7 +302,7 @@ namespace Microsoft.Data.Entity.Query
                 = (OfTypeResultOperator)handlerContext.ResultOperator;
 
             var entityType
-                = handlerContext.QueryModelVisitor.QueryCompilationContext.Model
+                = handlerContext.QueryModelVisitor.QueryCompilationContext.Services.Model
                     .FindEntityType(ofTypeResultOperator.SearchedItemType);
 
             if (entityType == null)
@@ -317,7 +316,11 @@ namespace Microsoft.Data.Entity.Query
             if (concreteEntityTypes.Length != 1
                 || concreteEntityTypes[0].RootType() != concreteEntityTypes[0])
             {
-                var extensions = handlerContext.QueryModelVisitor.QueryCompilationContext.RelationalExtensions;
+                var extensions = handlerContext
+                    .QueryModelVisitor
+                    .QueryCompilationContext
+                    .RelationalServices
+                    .RelationalExtensions;
 
                 var discriminatorProperty = extensions.For(concreteEntityTypes[0]).DiscriminatorProperty;
 

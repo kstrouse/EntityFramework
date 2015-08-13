@@ -246,7 +246,10 @@ namespace Microsoft.Data.Entity.Query.ExpressionVisitors
                             : Expression.Call(methodCallExpression.Method, arguments);
 
                     var translatedExpression =
-                        _queryModelVisitor.QueryCompilationContext.CompositeMethodCallTranslator
+                        _queryModelVisitor
+                            .QueryCompilationContext
+                            .RelationalServices
+                            .CompositeMethodCallTranslator
                             .Translate(boundExpression);
 
                     if (translatedExpression != null)
@@ -289,7 +292,10 @@ namespace Microsoft.Data.Entity.Query.ExpressionVisitors
                             : memberExpression;
 
                     var translatedExpression
-                        = _queryModelVisitor.QueryCompilationContext.CompositeMemberTranslator
+                        = _queryModelVisitor
+                            .QueryCompilationContext
+                            .RelationalServices
+                            .CompositeMemberTranslator
                             .Translate(newMemberExpression);
 
                     if (translatedExpression != null)
@@ -341,7 +347,11 @@ namespace Microsoft.Data.Entity.Query.ExpressionVisitors
                 && selectExpression != _targetSelectExpression)
             {
                 selectExpression?.AddToProjection(
-                    _queryModelVisitor.QueryCompilationContext.RelationalExtensions.For(property).ColumnName,
+                    _queryModelVisitor
+                        .QueryCompilationContext
+                        .RelationalServices
+                        .RelationalExtensions
+                        .For(property).ColumnName,
                     property,
                     querySource);
 
@@ -356,7 +366,11 @@ namespace Microsoft.Data.Entity.Query.ExpressionVisitors
         {
             return new AliasExpression(
                 new ColumnExpression(
-                    _queryModelVisitor.QueryCompilationContext.RelationalExtensions.For(property).ColumnName,
+                    _queryModelVisitor
+                        .QueryCompilationContext
+                        .RelationalServices
+                        .RelationalExtensions
+                        .For(property).ColumnName,
                     property,
                     selectExpression.GetTableForQuerySource(querySource)));
         }

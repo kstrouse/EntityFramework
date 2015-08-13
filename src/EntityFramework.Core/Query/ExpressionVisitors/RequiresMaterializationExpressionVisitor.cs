@@ -53,7 +53,7 @@ namespace Microsoft.Data.Entity.Query.ExpressionVisitors
                 _querySources.Add(querySourceReferenceExpression.ReferencedQuerySource, 0);
             }
 
-            if (_queryModelVisitor.QueryCompilationContext.Model
+            if (_queryModelVisitor.QueryCompilationContext.Services.Model
                 .FindEntityType(querySourceReferenceExpression.Type) != null)
             {
                 _querySources[querySourceReferenceExpression.ReferencedQuerySource]++;

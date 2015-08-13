@@ -128,6 +128,7 @@ namespace Microsoft.Framework.DependencyInjection
                 .AddScoped<ResultOperatorHandler>()
                 .AddScoped<QueryAnnotationExtractor>()
                 .AddScoped<QueryOptimizer>()
+                .AddScoped<QueryCompilationContextServices>()
                 .AddScoped(p => GetProviderServices(p).QueryContextFactory)
                 .AddScoped(p => GetProviderServices(p).QueryCompilationContextFactory)
                 .AddScoped(p => GetProviderServices(p).CompiledQueryCacheKeyGenerator)

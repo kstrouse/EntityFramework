@@ -72,6 +72,7 @@
     <Compile Include="Query\ExpressionVisitors\RelationalQueryingExpressionVisitor.cs" />
     <Compile Include="Query\Internal\RelationalExpressionPrinter.cs" />
     <Compile Include="Query\RelationalQueryCompilationContextFactory.cs" />
+    <Compile Include="Query\RelationalQueryCompilationContextServices.cs" />
     <Compile Include="Query\Sql\ISqlQueryGeneratorFactory.cs" />
     <Compile Include="RelationalReferenceReferenceBuilderExtensions.cs" />
     <Compile Include="Migrations\Builders\ColumnsBuilder.cs" />

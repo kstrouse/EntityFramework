@@ -16,18 +16,24 @@ namespace Microsoft.Data.Entity.Query.Sql
 {
     public class RawSqlQueryGenerator : ISqlQueryGenerator
     {
-        private readonly SelectExpression _selectExpression;
-        private readonly string _sql;
-        private readonly object[] _inputParameters;
-        private readonly List<CommandParameter> _commandParameters;
+        private readonly List<CommandParameter> _commandParameters = new List<CommandParameter>();
 
-        public RawSqlQueryGenerator(
-            [NotNull] SelectExpression selectExpression,
-            [NotNull] string sql,
-            [NotNull] object[] parameters,
-            [NotNull] IRelationalTypeMapper typeMapper)
+        private SelectExpression _selectExpression;
+        private string _sql;
+        private object[] _inputParameters;
+
+        public RawSqlQueryGenerator([NotNull] IRelationalTypeMapper typeMapper)
         {
             Check.NotNull(typeMapper, nameof(typeMapper));
+
+            TypeMapper = typeMapper;
+        }
+
+        public virtual void Initialize(
+            [NotNull] SelectExpression selectExpression,
+            [NotNull] string sql,
+            [NotNull] object[] parameters)
+        {
             Check.NotNull(selectExpression, nameof(selectExpression));
             Check.NotNull(sql, nameof(sql));
             Check.NotNull(parameters, nameof(parameters));
@@ -35,11 +41,7 @@ namespace Microsoft.Data.Entity.Query.Sql
             _selectExpression = selectExpression;
             _sql = sql;
             _inputParameters = parameters;
-            _commandParameters = new List<CommandParameter>();
-            TypeMapper = typeMapper;
         }
-
-        public virtual SelectExpression SelectExpression => _selectExpression;
 
         protected virtual IRelationalTypeMapper TypeMapper { get; }
 

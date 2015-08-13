@@ -8,6 +8,10 @@ namespace Microsoft.Data.Entity.Query.Sql
 {
     public interface ISqlQueryGeneratorFactory
     {
-        ISqlQueryGenerator Create([NotNull] SelectExpression selectExpression);
+        ISqlQueryGenerator CreateGenerator([NotNull] SelectExpression selectExpression);
+        ISqlQueryGenerator CreateRawCommandGenerator(
+            [NotNull] SelectExpression selectExpression,
+            [NotNull] string sql,
+            [NotNull] object[] parameters);
     }
 }

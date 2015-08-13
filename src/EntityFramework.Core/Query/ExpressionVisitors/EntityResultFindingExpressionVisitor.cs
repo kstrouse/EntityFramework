@@ -49,7 +49,7 @@ namespace Microsoft.Data.Entity.Query.ExpressionVisitors
             if (!_untrackedQuerySources.Contains(querySourceReferenceExpression.ReferencedQuerySource))
             {
                 var entityType
-                    = _queryCompilationContext.Model
+                    = _queryCompilationContext.Services.Model
                         .FindEntityType(querySourceReferenceExpression.Type);
 
                 if (entityType != null)

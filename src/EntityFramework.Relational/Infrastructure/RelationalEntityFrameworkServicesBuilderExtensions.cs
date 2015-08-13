@@ -9,6 +9,7 @@ using Microsoft.Data.Entity.Migrations;
 using Microsoft.Data.Entity.Migrations.Infrastructure;
 using Microsoft.Data.Entity.Query;
 using Microsoft.Data.Entity.Query.ExpressionVisitors;
+using Microsoft.Data.Entity.Query.Sql;
 using Microsoft.Data.Entity.Storage;
 using Microsoft.Data.Entity.Update;
 using Microsoft.Data.Entity.Utilities;
@@ -74,8 +75,10 @@ namespace Microsoft.Data.Entity.Infrastructure
                 .AddScoped<RelationalResultOperatorHandler>()
                 .AddScoped<RelationalQueryCompilationContextFactory>()
                 .AddScoped<RelationalQueryingExpressionVisitor>()
+                .AddScoped<RelationalQueryCompilationContextServices>()
                 .AddScoped(p => GetProviderServices(p).SqlQueryGeneratorFactory)
-                .AddTransient<RelationalQueryCompilationContext>();
+                .AddTransient<RelationalQueryCompilationContext>()
+                .AddTransient<RawSqlQueryGenerator>();
         }
 
         private static IRelationalDatabaseProviderServices GetProviderServices(IServiceProvider serviceProvider)

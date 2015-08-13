@@ -20,12 +20,28 @@ namespace Microsoft.Data.Entity.Query.Sql
             _serviceProvider = serviceProvider;
         }
 
-        public virtual ISqlQueryGenerator Create([NotNull] SelectExpression selectExpression)
+        public virtual ISqlQueryGenerator CreateGenerator([NotNull] SelectExpression selectExpression)
         {
             Check.NotNull(selectExpression, nameof(selectExpression));
 
             var querySqlGenerator = _serviceProvider.GetService<SqlServerQuerySqlGenerator>();
             querySqlGenerator.SelectExpression = selectExpression;
+
+            return querySqlGenerator;
+        }
+
+        public virtual ISqlQueryGenerator CreateRawCommandGenerator(
+            [NotNull] SelectExpression selectExpression,
+            [NotNull] string sql,
+            [NotNull] object[] parameters)
+        {
+            Check.NotNull(selectExpression, nameof(selectExpression));
+            Check.NotNull(sql, nameof(sql));
+            Check.NotNull(parameters, nameof(parameters));
+
+            var querySqlGenerator = _serviceProvider.GetService<RawSqlQueryGenerator>();
+
+            querySqlGenerator.Initialize( selectExpression, sql, parameters);
 
             return querySqlGenerator;
         }

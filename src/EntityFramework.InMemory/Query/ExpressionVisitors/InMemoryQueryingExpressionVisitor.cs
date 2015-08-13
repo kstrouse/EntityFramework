@@ -45,7 +45,7 @@ namespace Microsoft.Data.Entity.Query.ExpressionVisitors
                 Check.NotNull(elementType, nameof(elementType));
 
                 var entityType
-                    = QueryModelVisitor.QueryCompilationContext.Model
+                    = QueryModelVisitor.QueryCompilationContext.Services.Model
                         .GetEntityType(elementType);
 
                 var keyProperties
@@ -54,6 +54,7 @@ namespace Microsoft.Data.Entity.Query.ExpressionVisitors
                 var keyFactory
                     = QueryModelVisitor
                         .QueryCompilationContext
+                        .Services
                         .EntityKeyFactorySource.GetKeyFactory(entityType.GetPrimaryKey());
 
                 Func<ValueBuffer, EntityKey> entityKeyFactory
@@ -65,6 +66,7 @@ namespace Microsoft.Data.Entity.Query.ExpressionVisitors
                     var materializer
                        = new MaterializerFactory(QueryModelVisitor
                            .QueryCompilationContext
+                           .Services
                            .EntityMaterializerSource)
                            .CreateMaterializer(entityType);
 

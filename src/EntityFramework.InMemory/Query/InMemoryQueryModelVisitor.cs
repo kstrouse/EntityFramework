@@ -53,6 +53,7 @@ namespace Microsoft.Data.Entity.Query
                                     var materializer
                                         = new MaterializerFactory(
                                             QueryCompilationContext
+                                                .Services
                                                 .EntityMaterializerSource)
                                             .CreateMaterializer(targetType);
 
