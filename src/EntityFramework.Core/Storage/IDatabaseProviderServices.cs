@@ -28,5 +28,6 @@ namespace Microsoft.Data.Entity.Storage
         IQueryAnnotationExtractor QueryAnnotationExtractor { get; }
         IQueryOptimizer QueryOptimizer { get; }
         IQueryingExpressionVisitor QueryingExpressionVisitor { get; }
+        IProjectionExpressionVisitor ProjectionExpressionVisitor { get; }
     }
 }

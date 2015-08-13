@@ -32,18 +32,20 @@ namespace Microsoft.Data.Entity.Storage
         public virtual IConventionSetBuilder ConventionSetBuilder => null;
         public virtual IValueGeneratorSelector ValueGeneratorSelector => GetService<ValueGeneratorSelector>();
         public virtual IModelValidator ModelValidator => GetService<LoggingModelValidator>();
+        public virtual ICompiledQueryCacheKeyGenerator CompiledQueryCacheKeyGenerator => GetService<CompiledQueryCacheKeyGenerator>();
+        public virtual IResultOperatorHandler ResultOperatorHandler => GetService<ResultOperatorHandler>();
+        public virtual IQueryAnnotationExtractor QueryAnnotationExtractor => GetService<QueryAnnotationExtractor>();
+        public virtual IQueryOptimizer QueryOptimizer => GetService<QueryOptimizer>();
+        public virtual IProjectionExpressionVisitor ProjectionExpressionVisitor => GetService<ProjectionExpressionVisitor>();
 
         public abstract IDatabase Database { get; }
         public abstract IDatabaseCreator Creator { get; }
         public abstract IModelSource ModelSource { get; }
         public abstract IValueGeneratorCache ValueGeneratorCache { get; }
-
         public abstract IQueryContextFactory QueryContextFactory { get; }
         public abstract IQueryCompilationContextFactory QueryCompilationContextFactory { get; }
-        public virtual ICompiledQueryCacheKeyGenerator CompiledQueryCacheKeyGenerator => GetService<CompiledQueryCacheKeyGenerator>();
-        public virtual IResultOperatorHandler ResultOperatorHandler => GetService<ResultOperatorHandler>();
-        public virtual IQueryAnnotationExtractor QueryAnnotationExtractor => GetService<QueryAnnotationExtractor>();
-        public virtual IQueryOptimizer QueryOptimizer => GetService<QueryOptimizer>();
         public abstract IQueryingExpressionVisitor QueryingExpressionVisitor { get; }
+
+
     }
 }

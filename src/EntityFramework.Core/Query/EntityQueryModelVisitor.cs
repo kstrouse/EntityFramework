@@ -64,9 +64,6 @@ namespace Microsoft.Data.Entity.Query
 
         public virtual StreamedSequenceInfo StreamedSequenceInfo => _streamedSequenceInfo;
 
-        protected virtual ExpressionVisitor CreateProjectionExpressionVisitor([NotNull] IQuerySource querySource)
-            => new ProjectionExpressionVisitor(this);
-
         protected virtual ExpressionVisitor CreateOrderingExpressionVisitor([NotNull] Ordering ordering)
             => new DefaultQueryExpressionVisitor(this);
 
@@ -784,8 +781,10 @@ namespace Microsoft.Data.Entity.Query
 
             var selector
                 = ReplaceClauseReferences(
-                    CreateProjectionExpressionVisitor(queryModel.MainFromClause)
-                        .Visit(selectClause.Selector),
+                    QueryCompilationContext
+                        .Services
+                        .ProjectionExpressionVisitor
+                        .Visit(this, queryModel.MainFromClause, selectClause.Selector),
                     inProjection: true);
 
             _expression

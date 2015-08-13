@@ -10,6 +10,7 @@ using Microsoft.Data.Entity.Internal;
 using Microsoft.Data.Entity.Metadata.Conventions.Internal;
 using Microsoft.Data.Entity.Metadata.Internal;
 using Microsoft.Data.Entity.Query;
+using Microsoft.Data.Entity.Query.ExpressionVisitors;
 using Microsoft.Data.Entity.Storage;
 using Microsoft.Data.Entity.Utilities;
 using Microsoft.Data.Entity.ValueGeneration;
@@ -128,6 +129,7 @@ namespace Microsoft.Framework.DependencyInjection
                 .AddScoped<ResultOperatorHandler>()
                 .AddScoped<QueryAnnotationExtractor>()
                 .AddScoped<QueryOptimizer>()
+                .AddScoped<ProjectionExpressionVisitor>()
                 .AddScoped<QueryCompilationContextServices>()
                 .AddScoped(p => GetProviderServices(p).QueryContextFactory)
                 .AddScoped(p => GetProviderServices(p).QueryCompilationContextFactory)
@@ -135,7 +137,8 @@ namespace Microsoft.Framework.DependencyInjection
                 .AddScoped(p => GetProviderServices(p).ResultOperatorHandler)
                 .AddScoped(p => GetProviderServices(p).QueryAnnotationExtractor)
                 .AddScoped(p => GetProviderServices(p).QueryOptimizer)
-                .AddScoped(p => GetProviderServices(p).QueryingExpressionVisitor);
+                .AddScoped(p => GetProviderServices(p).QueryingExpressionVisitor)
+                .AddScoped(p => GetProviderServices(p).ProjectionExpressionVisitor);
         }
 
         private static IDbContextServices GetContextServices(IServiceProvider serviceProvider)

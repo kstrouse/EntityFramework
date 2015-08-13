@@ -19,8 +19,8 @@ namespace Microsoft.Data.Entity.Query
             [NotNull] IEntityMaterializerSource entityMaterializerSource,
             [NotNull] IEntityKeyFactorySource entityKeyFactorySource,
             [NotNull] IClrAccessorSource<IClrPropertyGetter> clrPropertyGetterSource,
-            [NotNull] IQueryingExpressionVisitor queryingExpressionVisitor
-            )
+            [NotNull] IQueryingExpressionVisitor queryingExpressionVisitor,
+            [NotNull] IProjectionExpressionVisitor projectionExpressionVisitor)
         {
             Model = model;
             ResultOperatorHandler = resultOperatorHandler;
@@ -28,6 +28,7 @@ namespace Microsoft.Data.Entity.Query
             EntityKeyFactorySource = entityKeyFactorySource;
             ClrPropertyGetterSource = clrPropertyGetterSource;
             QueryingExpressionVisitor = queryingExpressionVisitor;
+            ProjectionExpressionVisitor = projectionExpressionVisitor;
         }
 
         public virtual IModel Model { get; }
@@ -36,5 +37,6 @@ namespace Microsoft.Data.Entity.Query
         public virtual IEntityKeyFactorySource EntityKeyFactorySource { get; }
         public virtual IClrAccessorSource<IClrPropertyGetter> ClrPropertyGetterSource { get; }
         public virtual IQueryingExpressionVisitor QueryingExpressionVisitor { get; }
+        public virtual IProjectionExpressionVisitor ProjectionExpressionVisitor { get; }
     }
 }

@@ -218,7 +218,9 @@
     <Compile Include="Query\Annotations\IncludeQueryAnnotation.cs" />
     <Compile Include="EF.cs" />
     <Compile Include="Query\CompiledQueryCacheKeyGenerator.cs" />
+    <Compile Include="Query\ExpressionVisitors\IProjectionExpressionVisitor.cs" />
     <Compile Include="Query\ExpressionVisitors\IQueryingExpressionVisitor.cs" />
+    <Compile Include="Query\ExpressionVisitors\ProjectionExpressionVisitor.cs" />
     <Compile Include="Query\ICompiledQueryCacheKeyGenerator.cs" />
     <Compile Include="Query\IQueryAnnotationExtractor.cs" />
     <Compile Include="Query\IQueryCompiler.cs" />
@@ -272,7 +274,7 @@
     <Compile Include="Query\ExpressionVisitors\EntityResultFindingExpressionVisitor.cs" />
     <Compile Include="Query\IAsyncEnumerableAccessor.cs" />
     <Compile Include="Query\ExpressionVisitors\MemberAccessBindingExpressionVisitor.cs" />
-    <Compile Include="Query\ExpressionVisitors\ProjectionExpressionVisitor.cs" />
+    <Compile Include="Query\ExpressionVisitors\EntityProjectionExpressionVisitor.cs" />
     <Compile Include="Query\ICompiledQueryCache.cs" />
     <Compile Include="Query\IncludeSpecification.cs" />
     <Compile Include="Query\IQueryContextFactory.cs" />

@@ -75,6 +75,7 @@ namespace Microsoft.Data.Entity.Infrastructure
                 .AddScoped<RelationalResultOperatorHandler>()
                 .AddScoped<RelationalQueryCompilationContextFactory>()
                 .AddScoped<RelationalQueryingExpressionVisitor>()
+                .AddScoped<RelationalProjectionExpressionVisitor>()
                 .AddScoped<RelationalQueryCompilationContextServices>()
                 .AddScoped(p => GetProviderServices(p).SqlQueryGeneratorFactory)
                 .AddTransient<RelationalQueryCompilationContext>()

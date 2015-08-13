@@ -29,11 +29,10 @@ namespace Microsoft.Data.Entity.Query
         private readonly Dictionary<IQuerySource, RelationalQueryModelVisitor> _subQueryModelVisitorsBySource
             = new Dictionary<IQuerySource, RelationalQueryModelVisitor>();
 
+        private bool _requiresClientProjection;
         private bool _requiresClientFilter;
         private bool _requiresClientResultOperator;
         private bool _bindParentQueries;
-
-        private RelationalProjectionExpressionVisitor _projectionVisitor;
 
         private Dictionary<IncludeSpecification, List<int>> _navigationIndexMap = new Dictionary<IncludeSpecification, List<int>>();
 
@@ -48,7 +47,17 @@ namespace Microsoft.Data.Entity.Query
         public virtual bool RequiresClientEval { get; set; }
         public virtual bool RequiresClientSelectMany { get; set; }
         public virtual bool RequiresClientFilter => _requiresClientFilter || RequiresClientEval;
-        public virtual bool RequiresClientProjection => _projectionVisitor.RequiresClientEval || RequiresClientEval;
+        public virtual bool RequiresClientProjection
+        {
+            get { return _requiresClientProjection || RequiresClientEval; }
+            [param: NotNull]
+            set
+            {
+                Check.NotNull(value, nameof(value));
+
+                _requiresClientProjection = value;
+            }
+        }
 
         public virtual bool RequiresClientResultOperator
         {
@@ -107,14 +116,6 @@ namespace Microsoft.Data.Entity.Query
             return (_queriesBySource.TryGetValue(querySource, out selectExpression)
                 ? selectExpression
                 : _queriesBySource.Values.SingleOrDefault(se => se.HandlesQuerySource(querySource)));
-        }
-
-        protected override ExpressionVisitor CreateProjectionExpressionVisitor(IQuerySource querySource)
-        {
-            Check.NotNull(querySource, nameof(querySource));
-
-            return _projectionVisitor
-                = new RelationalProjectionExpressionVisitor(this, querySource);
         }
 
         public override void VisitQueryModel(QueryModel queryModel)
@@ -451,7 +452,7 @@ namespace Microsoft.Data.Entity.Query
 
                 var innerQuerySource = (IQuerySource)((ConstantExpression)shaperMethodArgs[0]).Value;
 
-                foreach (var queryAnnotation 
+                foreach (var queryAnnotation
                     in QueryCompilationContext.QueryAnnotations
                         .Where(qa => qa.QuerySource == innerQuerySource))
                 {
