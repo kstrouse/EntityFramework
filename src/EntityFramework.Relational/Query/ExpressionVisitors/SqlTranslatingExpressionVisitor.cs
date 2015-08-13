@@ -2,8 +2,10 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using JetBrains.Annotations;
 using Microsoft.Data.Entity.Metadata;
 using Microsoft.Data.Entity.Query.Expressions;
@@ -25,6 +27,8 @@ namespace Microsoft.Data.Entity.Query.ExpressionVisitors
 
         private readonly bool _bindParentQueries;
         private readonly bool _inProjection;
+        private static MethodInfo _stringCompareMethodInfo = typeof(string).GetTypeInfo().GetDeclaredMethods("Compare")
+            .Where(m => m.GetParameters().Count() == 2).Single();
 
         public SqlTranslatingExpressionVisitor(
             [NotNull] RelationalQueryModelVisitor queryModelVisitor,
@@ -61,6 +65,12 @@ namespace Microsoft.Data.Entity.Query.ExpressionVisitors
                 case ExpressionType.Equal:
                 case ExpressionType.NotEqual:
                 {
+                    var stringCompareExpresion = ProcessStringCompare(binaryExpression);
+                    if (stringCompareExpresion != null)
+                    {
+                        return stringCompareExpresion;
+                    }
+
                     var structuralComparisonExpression
                         = UnfoldStructuralComparison(
                             binaryExpression.NodeType,
@@ -74,6 +84,12 @@ namespace Microsoft.Data.Entity.Query.ExpressionVisitors
                 case ExpressionType.LessThan:
                 case ExpressionType.LessThanOrEqual:
                 {
+                    var stringCompareExpresion = ProcessStringCompare(binaryExpression);
+                    if (stringCompareExpresion != null)
+                    {
+                        return stringCompareExpresion;
+                    }
+
                     return ProcessComparisonExpression(binaryExpression);
                 }
 
@@ -122,7 +138,12 @@ namespace Microsoft.Data.Entity.Query.ExpressionVisitors
 
                     return leftExpression != null
                            && rightExpression != null
-                        ? Expression.MakeBinary(binaryExpression.NodeType, leftExpression, rightExpression)
+                        ? Expression.MakeBinary(
+                            binaryExpression.NodeType, 
+                            leftExpression, 
+                            rightExpression, 
+                            binaryExpression.IsLiftedToNull, 
+                            binaryExpression.Method)
                         : null;
                 }
             }
@@ -172,6 +193,53 @@ namespace Microsoft.Data.Entity.Query.ExpressionVisitors
             }
 
             return expression;
+        }
+
+        private Expression ProcessStringCompare(BinaryExpression expression)
+        {
+            if (!_queryModelVisitor.QueryCompilationContext.IsStringOrderComparisonSupported)
+            {
+                return null;
+            }
+
+            if (expression.NodeType == ExpressionType.Equal || expression.NodeType == ExpressionType.NotEqual
+                || expression.NodeType == ExpressionType.LessThan || expression.NodeType == ExpressionType.LessThanOrEqual
+                || expression.NodeType == ExpressionType.GreaterThan || expression.NodeType == ExpressionType.GreaterThanOrEqual)
+            {
+                var leftMethod = expression.Left as MethodCallExpression;
+                var rightConstant = expression.Right as ConstantExpression;
+                if (rightConstant != null && rightConstant.Type == typeof(int) && (int)rightConstant.Value == 0 && leftMethod != null)
+                {
+                    if (leftMethod.Method == _stringCompareMethodInfo)
+                    {
+                        var newleftString = Visit(leftMethod.Arguments[0]);
+                        var newRightString = Visit(leftMethod.Arguments[1]);
+
+                        return new SqlFunctionExpression(
+                            "__StringComparisonTemplate", 
+                            new[] { newleftString, newRightString, Expression.Constant(expression.NodeType) }, 
+                            typeof(bool));
+                    }
+                }
+
+                var leftConstant = expression.Left as ConstantExpression;
+                var rightMethod = expression.Right as MethodCallExpression;
+                if (leftConstant != null && leftConstant.Type == typeof(int) && (int)leftConstant.Value == 0 && rightMethod != null)
+                {
+                    if (rightMethod.Method == _stringCompareMethodInfo)
+                    {
+                        var newleftString = Visit(rightMethod.Arguments[0]);
+                        var newRightString = Visit(rightMethod.Arguments[1]);
+
+                        return new SqlFunctionExpression(
+                            "__StringComparisonTemplate", 
+                            new[] { newleftString, newRightString, Expression.Constant(expression.NodeType) }, 
+                            typeof(bool));
+                    }
+                }
+            }
+
+            return null;
         }
 
         private Expression ProcessComparisonExpression(BinaryExpression binaryExpression)

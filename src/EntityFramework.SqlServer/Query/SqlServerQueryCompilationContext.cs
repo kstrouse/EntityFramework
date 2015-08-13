@@ -52,5 +52,7 @@ namespace Microsoft.Data.Entity.SqlServer.Query
             => new SqlServerQuerySqlGenerator(Check.NotNull(selectExpression, nameof(selectExpression)), TypeMapper);
 
         public override bool IsCrossApplySupported => true;
+
+        public override bool IsStringOrderComparisonSupported => true;
     }
 }

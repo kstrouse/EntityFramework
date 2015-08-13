@@ -78,6 +78,22 @@ namespace Microsoft.Data.Entity.Query.Sql
         protected virtual string TypedTrueLiteral => "CAST(1 AS BIT)";
         protected virtual string TypedFalseLiteral => "CAST(0 AS BIT)";
 
+        protected virtual Dictionary<ExpressionType, string> BinaryOperatorMap => new Dictionary<ExpressionType, string>
+        {
+            { ExpressionType.Equal, " = " },
+            { ExpressionType.NotEqual, " <> " },
+            { ExpressionType.GreaterThan, " > " },
+            { ExpressionType.GreaterThanOrEqual, " >= " },
+            { ExpressionType.LessThan, " < " },
+            { ExpressionType.LessThanOrEqual, " <= " },
+            { ExpressionType.AndAlso, " AND " },
+            { ExpressionType.OrElse, " OR " },
+            { ExpressionType.Subtract, " - " },
+            { ExpressionType.Multiply, " * " },
+            { ExpressionType.Divide, " / " },
+            { ExpressionType.Modulo, " % " },
+        };
+
         public virtual Expression VisitSelect(SelectExpression selectExpression)
         {
             Check.NotNull(selectExpression, nameof(selectExpression));
@@ -692,53 +708,19 @@ namespace Microsoft.Data.Entity.Query.Sql
                 }
 
                 string op;
-
-                switch (binaryExpression.NodeType)
+                if (!BinaryOperatorMap.TryGetValue(binaryExpression.NodeType, out op))
                 {
-                    case ExpressionType.Equal:
-                        op = " = ";
-                        break;
-                    case ExpressionType.NotEqual:
-                        op = " <> ";
-                        break;
-                    case ExpressionType.GreaterThan:
-                        op = " > ";
-                        break;
-                    case ExpressionType.GreaterThanOrEqual:
-                        op = " >= ";
-                        break;
-                    case ExpressionType.LessThan:
-                        op = " < ";
-                        break;
-                    case ExpressionType.LessThanOrEqual:
-                        op = " <= ";
-                        break;
-                    case ExpressionType.AndAlso:
-                        op = " AND ";
-                        break;
-                    case ExpressionType.OrElse:
-                        op = " OR ";
-                        break;
-                    case ExpressionType.Add:
-                        op = (binaryExpression.Left.Type == typeof(string)
-                              && binaryExpression.Right.Type == typeof(string))
-                            ? " " + ConcatOperator + " "
-                            : " + ";
-                        break;
-                    case ExpressionType.Subtract:
-                        op = " - ";
-                        break;
-                    case ExpressionType.Multiply:
-                        op = " * ";
-                        break;
-                    case ExpressionType.Divide:
-                        op = " / ";
-                        break;
-                    case ExpressionType.Modulo:
-                        op = " % ";
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
+                    switch (binaryExpression.NodeType)
+                    {
+                        case ExpressionType.Add:
+                            op = (binaryExpression.Left.Type == typeof(string)
+                                  && binaryExpression.Right.Type == typeof(string))
+                                ? " " + ConcatOperator + " "
+                                : " + ";
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
                 }
 
                 _sql.Append(op);
@@ -840,6 +822,17 @@ namespace Microsoft.Data.Entity.Query.Sql
 
         public virtual Expression VisitSqlFunction(SqlFunctionExpression sqlFunctionExpression)
         {
+            if (sqlFunctionExpression.FunctionName == "__StringComparisonTemplate")
+            {
+                var arguments = sqlFunctionExpression.Arguments.ToList();
+
+                Visit(arguments[0]);
+                _sql.Append(BinaryOperatorMap[(ExpressionType)((ConstantExpression)arguments[2]).Value]);
+                Visit(arguments[1]);
+
+                return sqlFunctionExpression;
+            }
+
             _sql.Append(sqlFunctionExpression.FunctionName);
             _sql.Append("(");
 

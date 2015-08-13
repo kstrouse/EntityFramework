@@ -46,6 +46,7 @@
     <Compile Include="Extensions\SqlServerDbContextOptionsBuilder.cs" />
     <Compile Include="ISqlServerConnection.cs" />
     <Compile Include="Metadata\Internal\SqlServerInternalMetadataBuilderExtensions.cs" />
+    <Compile Include="Query\Methods\StringCompareTranslator.cs" />
     <Compile Include="Update\ISqlServerUpdateSqlGenerator.cs" />
     <Compile Include="Metadata\ISqlServerIndexAnnotations.cs" />
     <Compile Include="Metadata\ISqlServerKeyAnnotations.cs" />

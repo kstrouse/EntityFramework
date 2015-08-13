@@ -79,6 +79,8 @@ namespace Microsoft.Data.Entity.Query
 
         public virtual bool IsCrossApplySupported => false;
 
+        public virtual bool IsStringOrderComparisonSupported => false;
+
         public virtual SelectExpression FindSelectExpression([NotNull] IQuerySource querySource)
         {
             Check.NotNull(querySource, nameof(querySource));
