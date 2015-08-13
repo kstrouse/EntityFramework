@@ -6,17 +6,11 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using JetBrains.Annotations;
-using Microsoft.Data.Entity.Utilities;
 
 namespace Microsoft.Data.Entity.Query.ExpressionVisitors
 {
     public abstract class EntityQueryableExpressionVisitor : DefaultQueryExpressionVisitor
     {
-        protected EntityQueryableExpressionVisitor([NotNull] EntityQueryModelVisitor entityQueryModelVisitor)
-            : base(Check.NotNull(entityQueryModelVisitor, nameof(entityQueryModelVisitor)))
-        {
-        }
-
         protected override Expression VisitConstant(ConstantExpression constantExpression)
         {
             return constantExpression.Type.GetTypeInfo().IsGenericType

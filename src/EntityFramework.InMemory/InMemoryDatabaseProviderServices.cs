@@ -28,6 +28,6 @@ namespace Microsoft.Data.Entity
         public override IValueGeneratorSelector ValueGeneratorSelector => GetService<InMemoryValueGeneratorSelector>();
         public override IModelSource ModelSource => GetService<InMemoryModelSource>();
         public override IValueGeneratorCache ValueGeneratorCache => GetService<InMemoryValueGeneratorCache>();
-        public override IQueryingExpressionVisitor QueryingExpressionVisitor => GetService<InMemoryQueryingExpressionVisitor>();
+        public override IEntityQueryableExpressionVisitorFactory EntityQueryableExpressionVisitorFactory => GetService<InMemoryEntityQueryableExpressionVisitorFactory>();
     }
 }

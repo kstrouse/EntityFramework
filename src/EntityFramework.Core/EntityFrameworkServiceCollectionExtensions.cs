@@ -124,12 +124,11 @@ namespace Microsoft.Framework.DependencyInjection
                 .AddScoped<IQueryExecutor, QueryExecutor>()
                 .AddScoped<IQueryPreprocessor, QueryPreprocessor>()
                 .AddScoped<IQueryCompiler, QueryCompiler>()
-                .AddScoped<IQueryModelCompiler, QueryModelCompiler>()
                 .AddScoped<CompiledQueryCacheKeyGenerator>()
                 .AddScoped<ResultOperatorHandler>()
                 .AddScoped<QueryAnnotationExtractor>()
                 .AddScoped<QueryOptimizer>()
-                .AddScoped<ProjectionExpressionVisitor>()
+                .AddScoped<ProjectionExpressionVisitorFactory>()
                 .AddScoped<QueryCompilationContextServices>()
                 .AddScoped(p => GetProviderServices(p).QueryContextFactory)
                 .AddScoped(p => GetProviderServices(p).QueryCompilationContextFactory)
@@ -137,8 +136,9 @@ namespace Microsoft.Framework.DependencyInjection
                 .AddScoped(p => GetProviderServices(p).ResultOperatorHandler)
                 .AddScoped(p => GetProviderServices(p).QueryAnnotationExtractor)
                 .AddScoped(p => GetProviderServices(p).QueryOptimizer)
-                .AddScoped(p => GetProviderServices(p).QueryingExpressionVisitor)
-                .AddScoped(p => GetProviderServices(p).ProjectionExpressionVisitor);
+                .AddScoped(p => GetProviderServices(p).EntityQueryableExpressionVisitorFactory)
+                .AddScoped(p => GetProviderServices(p).ProjectionExpressionVisitorFactory)
+                .AddTransient<ProjectionExpressionVisitor>();
         }
 
         private static IDbContextServices GetContextServices(IServiceProvider serviceProvider)

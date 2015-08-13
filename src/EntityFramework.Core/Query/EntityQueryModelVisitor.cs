@@ -65,44 +65,70 @@ namespace Microsoft.Data.Entity.Query
         public virtual StreamedSequenceInfo StreamedSequenceInfo => _streamedSequenceInfo;
 
         protected virtual ExpressionVisitor CreateOrderingExpressionVisitor([NotNull] Ordering ordering)
-            => new DefaultQueryExpressionVisitor(this);
+            => new DefaultQueryExpressionVisitor() { QueryModelVisitor = this };
 
         public virtual Func<QueryContext, IEnumerable<TResult>> CreateQueryExecutor<TResult>([NotNull] QueryModel queryModel)
         {
             Check.NotNull(queryModel, nameof(queryModel));
 
-            _blockTaskExpressions = false;
+            QueryCompilationContext.Initialize(false);
 
-            VisitQueryModel(queryModel);
+            using (QueryCompilationContext.Logger.BeginScopeImpl(this))
+            {
+                QueryCompilationContext.Logger.LogInformation(queryModel, Strings.LogCompilingQueryModel);
 
-            SingleResultToSequence(queryModel);
+                _blockTaskExpressions = false;
 
-            IncludeNavigations(queryModel);
+                ExtractQueryAnnotations(queryModel);
 
-            TrackEntitiesInResults<TResult>(queryModel);
+                OptimizeQueryModel(queryModel);
 
-            InterceptExceptions();
+                QueryCompilationContext.FindQuerySourcesRequiringMaterialization(this, queryModel);
 
-            return CreateExecutorLambda<IEnumerable<TResult>>();
+                VisitQueryModel(queryModel);
+
+                SingleResultToSequence(queryModel);
+
+                IncludeNavigations(queryModel);
+
+                TrackEntitiesInResults<TResult>(queryModel);
+
+                InterceptExceptions();
+
+                return CreateExecutorLambda<IEnumerable<TResult>>();
+            }
         }
 
         public virtual Func<QueryContext, IAsyncEnumerable<TResult>> CreateAsyncQueryExecutor<TResult>([NotNull] QueryModel queryModel)
         {
             Check.NotNull(queryModel, nameof(queryModel));
 
-            _blockTaskExpressions = false;
+            QueryCompilationContext.Initialize(true);
 
-            VisitQueryModel(queryModel);
+            using (QueryCompilationContext.Logger.BeginScopeImpl(this))
+            {
+                QueryCompilationContext.Logger.LogInformation(queryModel, Strings.LogCompilingQueryModel);
 
-            AsyncSingleResultToSequence(queryModel);
+                _blockTaskExpressions = false;
 
-            IncludeNavigations(queryModel);
+                ExtractQueryAnnotations(queryModel);
 
-            TrackEntitiesInResults<TResult>(queryModel);
+                OptimizeQueryModel(queryModel);
 
-            InterceptExceptions();
+                QueryCompilationContext.FindQuerySourcesRequiringMaterialization(this, queryModel);
 
-            return CreateExecutorLambda<IAsyncEnumerable<TResult>>();
+                VisitQueryModel(queryModel);
+
+                AsyncSingleResultToSequence(queryModel);
+
+                IncludeNavigations(queryModel);
+
+                TrackEntitiesInResults<TResult>(queryModel);
+
+                InterceptExceptions();
+
+                return CreateExecutorLambda<IAsyncEnumerable<TResult>>();
+            }
         }
 
         protected virtual void InterceptExceptions()
@@ -113,6 +139,26 @@ namespace Microsoft.Data.Entity.Query
                         .MakeGenericMethod(_expression.Type.GetSequenceType()),
                     Expression.Lambda(_expression),
                     QueryContextParameter);
+        }
+
+        protected virtual void ExtractQueryAnnotations([NotNull] QueryModel queryModel)
+        {
+            Check.NotNull(queryModel, nameof(queryModel));
+
+            QueryCompilationContext.QueryAnnotations = QueryCompilationContext
+                .Services
+                .QueryAnnotationExtractor
+                .ExtractQueryAnnotations(queryModel);
+        }
+
+        protected virtual void OptimizeQueryModel([NotNull] QueryModel queryModel)
+        {
+            Check.NotNull(queryModel, nameof(queryModel));
+
+            QueryCompilationContext
+                .Services
+                .QueryOptimizer
+                .OptimizeQuery(QueryCompilationContext, this, queryModel);
         }
 
         protected virtual void SingleResultToSequence([NotNull] QueryModel queryModel)
@@ -783,8 +829,9 @@ namespace Microsoft.Data.Entity.Query
                 = ReplaceClauseReferences(
                     QueryCompilationContext
                         .Services
-                        .ProjectionExpressionVisitor
-                        .Visit(this, queryModel.MainFromClause, selectClause.Selector),
+                        .ProjectionExpressionVisitorFactory
+                        .Create(this, queryModel.MainFromClause)
+                        .Visit(selectClause.Selector),
                     inProjection: true);
 
             _expression
@@ -862,8 +909,11 @@ namespace Microsoft.Data.Entity.Query
             return QueryCompilationContext.LinqOperatorProvider
                 .AdjustSequenceType(
                     ReplaceClauseReferences(
-                        QueryCompilationContext.Services.QueryingExpressionVisitor
-                            .Visit(this, querySource, expression)));
+                        QueryCompilationContext
+                            .Services
+                            .EntityQueryableExpressionVisitorFactory
+                            .Create(this, querySource)
+                            .Visit(expression)));
         }
 
         private Expression ReplaceClauseReferences(Expression expression, bool inProjection = false)

@@ -27,7 +27,7 @@ namespace Microsoft.Data.Entity.Storage
         IResultOperatorHandler ResultOperatorHandler { get; }
         IQueryAnnotationExtractor QueryAnnotationExtractor { get; }
         IQueryOptimizer QueryOptimizer { get; }
-        IQueryingExpressionVisitor QueryingExpressionVisitor { get; }
-        IProjectionExpressionVisitor ProjectionExpressionVisitor { get; }
+        IEntityQueryableExpressionVisitorFactory EntityQueryableExpressionVisitorFactory { get; }
+        IProjectionExpressionVisitorFactory ProjectionExpressionVisitorFactory { get; }
     }
 }

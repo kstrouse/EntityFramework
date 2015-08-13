@@ -25,19 +25,31 @@ namespace Microsoft.Data.Entity.Query.ExpressionVisitors
         private static readonly ParameterExpression _valueBufferParameter
             = Expression.Parameter(typeof(ValueBuffer));
 
-        private readonly IQuerySource _querySource;
+        private IQuerySource _querySource;
 
-        public RelationalEntityQueryableExpressionVisitor(
-            [NotNull] RelationalQueryModelVisitor queryModelVisitor,
-            [NotNull] IQuerySource querySource)
-            : base(Check.NotNull(queryModelVisitor, nameof(queryModelVisitor)))
+        public virtual IQuerySource QuerySource
         {
-            Check.NotNull(querySource, nameof(querySource));
+            get { return _querySource; }
+            [param: NotNull]
+            set
+            {
+                Check.NotNull(value, nameof(value));
 
-            _querySource = querySource;
+                _querySource = value;
+            }
         }
 
-        private new RelationalQueryModelVisitor QueryModelVisitor => (RelationalQueryModelVisitor)base.QueryModelVisitor;
+        public virtual new RelationalQueryModelVisitor QueryModelVisitor
+        {
+            get { return (RelationalQueryModelVisitor)base.QueryModelVisitor; }
+            [param: NotNull]
+            set
+            {
+                Check.NotNull(value, nameof(value));
+
+                base.QueryModelVisitor = value;
+            }
+        }
 
         protected override Expression VisitSubQuery(SubQueryExpression subQueryExpression)
         {

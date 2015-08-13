@@ -36,7 +36,7 @@ namespace Microsoft.Data.Entity.Storage
         public virtual IResultOperatorHandler ResultOperatorHandler => GetService<ResultOperatorHandler>();
         public virtual IQueryAnnotationExtractor QueryAnnotationExtractor => GetService<QueryAnnotationExtractor>();
         public virtual IQueryOptimizer QueryOptimizer => GetService<QueryOptimizer>();
-        public virtual IProjectionExpressionVisitor ProjectionExpressionVisitor => GetService<ProjectionExpressionVisitor>();
+        public virtual IProjectionExpressionVisitorFactory ProjectionExpressionVisitorFactory => GetService<ProjectionExpressionVisitorFactory>();
 
         public abstract IDatabase Database { get; }
         public abstract IDatabaseCreator Creator { get; }
@@ -44,7 +44,7 @@ namespace Microsoft.Data.Entity.Storage
         public abstract IValueGeneratorCache ValueGeneratorCache { get; }
         public abstract IQueryContextFactory QueryContextFactory { get; }
         public abstract IQueryCompilationContextFactory QueryCompilationContextFactory { get; }
-        public abstract IQueryingExpressionVisitor QueryingExpressionVisitor { get; }
+        public abstract IEntityQueryableExpressionVisitorFactory EntityQueryableExpressionVisitorFactory { get; }
 
 
     }

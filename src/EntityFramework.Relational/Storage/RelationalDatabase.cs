@@ -25,12 +25,12 @@ namespace Microsoft.Data.Entity.Storage
         public RelationalDatabase(
             [NotNull] IModel model,
             [NotNull] ILoggerFactory loggerFactory,
-            [NotNull] IQueryModelCompiler queryModelCompiler,
+            [NotNull] IQueryCompilationContextFactory queryCompilationContextFactory,
             [NotNull] ICommandBatchPreparer batchPreparer,
             [NotNull] IBatchExecutor batchExecutor,
             [NotNull] IRelationalConnection connection,
             [NotNull] IDbContextOptions options)
-            : base(model, loggerFactory, queryModelCompiler)
+            : base(model, loggerFactory, queryCompilationContextFactory)
         {
             Check.NotNull(batchPreparer, nameof(batchPreparer));
             Check.NotNull(batchExecutor, nameof(batchExecutor));

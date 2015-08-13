@@ -7,11 +7,10 @@ using Remotion.Linq.Clauses;
 
 namespace Microsoft.Data.Entity.Query.ExpressionVisitors
 {
-    public interface IQueryingExpressionVisitor
+    public interface IProjectionExpressionVisitorFactory
     {
-        Expression Visit(
+        ExpressionVisitor Create(
             [NotNull] EntityQueryModelVisitor queryModelVisitor,
-            [NotNull] IQuerySource querySource,
-            [NotNull] Expression expression);
+            [NotNull] IQuerySource querySource);
     }
 }

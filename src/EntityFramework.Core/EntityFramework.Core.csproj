@@ -218,9 +218,9 @@
     <Compile Include="Query\Annotations\IncludeQueryAnnotation.cs" />
     <Compile Include="EF.cs" />
     <Compile Include="Query\CompiledQueryCacheKeyGenerator.cs" />
-    <Compile Include="Query\ExpressionVisitors\IProjectionExpressionVisitor.cs" />
-    <Compile Include="Query\ExpressionVisitors\IQueryingExpressionVisitor.cs" />
-    <Compile Include="Query\ExpressionVisitors\ProjectionExpressionVisitor.cs" />
+    <Compile Include="Query\ExpressionVisitors\IProjectionExpressionVisitorFactory.cs" />
+    <Compile Include="Query\ExpressionVisitors\IEntityQueryableExpressionVisitorFactory.cs" />
+    <Compile Include="Query\ExpressionVisitors\ProjectionExpressionVisitorFactory.cs" />
     <Compile Include="Query\ICompiledQueryCacheKeyGenerator.cs" />
     <Compile Include="Query\IQueryAnnotationExtractor.cs" />
     <Compile Include="Query\IQueryCompiler.cs" />
@@ -239,7 +239,6 @@
     <Compile Include="Query\IIncludableQueryable.cs" />
     <Compile Include="Query\Internal\IExpressionPrinter.cs" />
     <Compile Include="Query\IQueryExecutor.cs" />
-    <Compile Include="Query\IQueryModelCompiler.cs" />
     <Compile Include="Query\IQueryOptimizer.cs" />
     <Compile Include="Query\IQueryPreprocessor.cs" />
     <Compile Include="Query\QueryableHelpers.cs" />
@@ -247,7 +246,6 @@
     <Compile Include="Query\QueryCompilationContextServices.cs" />
     <Compile Include="Query\QueryCompiler.cs" />
     <Compile Include="Query\QueryExecutor.cs" />
-    <Compile Include="Query\QueryModelCompiler.cs" />
     <Compile Include="Query\QueryPreprocessor.cs" />
     <Compile Include="Query\SharedQueryExtensions.cs" />
     <Compile Include="DbSet`.cs" />
@@ -274,7 +272,7 @@
     <Compile Include="Query\ExpressionVisitors\EntityResultFindingExpressionVisitor.cs" />
     <Compile Include="Query\IAsyncEnumerableAccessor.cs" />
     <Compile Include="Query\ExpressionVisitors\MemberAccessBindingExpressionVisitor.cs" />
-    <Compile Include="Query\ExpressionVisitors\EntityProjectionExpressionVisitor.cs" />
+    <Compile Include="Query\ExpressionVisitors\ProjectionExpressionVisitor.cs" />
     <Compile Include="Query\ICompiledQueryCache.cs" />
     <Compile Include="Query\IncludeSpecification.cs" />
     <Compile Include="Query\IQueryContextFactory.cs" />

@@ -74,12 +74,14 @@ namespace Microsoft.Data.Entity.Infrastructure
                 .AddScoped<RelationalQueryContextFactory>()
                 .AddScoped<RelationalResultOperatorHandler>()
                 .AddScoped<RelationalQueryCompilationContextFactory>()
-                .AddScoped<RelationalQueryingExpressionVisitor>()
-                .AddScoped<RelationalProjectionExpressionVisitor>()
+                .AddScoped<RelationalEntityQueryableExpressionVisitorFactory>()
+                .AddScoped<RelationalProjectionExpressionVisitorFactory>()
                 .AddScoped<RelationalQueryCompilationContextServices>()
                 .AddScoped(p => GetProviderServices(p).SqlQueryGeneratorFactory)
                 .AddTransient<RelationalQueryCompilationContext>()
-                .AddTransient<RawSqlQueryGenerator>();
+                .AddTransient<RawSqlQueryGenerator>()
+                .AddTransient<RelationalEntityQueryableExpressionVisitor>()
+                .AddTransient<RelationalProjectionExpressionVisitor>();
         }
 
         private static IRelationalDatabaseProviderServices GetProviderServices(IServiceProvider serviceProvider)

@@ -19,7 +19,7 @@ namespace Microsoft.Data.Entity.Query
             _serviceProvider = serviceProvider;
         }
 
-        public virtual QueryCompilationContext Create()
+        public QueryCompilationContext Create()
             => _serviceProvider.GetService<RelationalQueryCompilationContext>();
     }
 }

@@ -69,8 +69,8 @@
     <Compile Include="Metadata\RelationalModelExtensions.cs" />
     <Compile Include="Metadata\RelationalPropertyExtensions.cs" />
     <Compile Include="Migrations\Infrastructure\ModelDifferContext.cs" />
-    <Compile Include="Query\ExpressionVisitors\RelationalProjectionExpressionVisitor.cs" />
-    <Compile Include="Query\ExpressionVisitors\RelationalQueryingExpressionVisitor.cs" />
+    <Compile Include="Query\ExpressionVisitors\RelationalProjectionExpressionVisitorFactory.cs" />
+    <Compile Include="Query\ExpressionVisitors\RelationalEntityQueryableExpressionVisitorFactory.cs" />
     <Compile Include="Query\Internal\RelationalExpressionPrinter.cs" />
     <Compile Include="Query\RelationalQueryCompilationContextFactory.cs" />
     <Compile Include="Query\RelationalQueryCompilationContextServices.cs" />
@@ -233,7 +233,7 @@
     <Compile Include="Query\Methods\IMethodCallTranslator.cs" />
     <Compile Include="Query\Methods\StartsWithTranslator.cs" />
     <Compile Include="Query\ExpressionVisitors\ResultTransformingExpressionVisitor.cs" />
-    <Compile Include="Query\ExpressionVisitors\RelationalEntityProjectionExpressionVisitor.cs" />
+    <Compile Include="Query\ExpressionVisitors\RelationalProjectionExpressionVisitor.cs" />
     <Compile Include="Query\ExpressionVisitors\RelationalEntityQueryableExpressionVisitor.cs" />
     <Compile Include="Query\RelationalQueryContextFactory.cs" />
     <Compile Include="Query\Sql\ISqlExpressionVisitor.cs" />

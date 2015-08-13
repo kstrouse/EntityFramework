@@ -43,8 +43,9 @@ namespace Microsoft.Framework.DependencyInjection
             return serviceCollection
                 .AddScoped<InMemoryQueryContextFactory>()
                 .AddScoped<InMemoryQueryCompilationContextFactory>()
-                .AddScoped<InMemoryQueryingExpressionVisitor>()
-                .AddTransient<InMemoryQueryCompilationContext>();
+                .AddScoped<InMemoryEntityQueryableExpressionVisitorFactory>()
+                .AddTransient<InMemoryQueryCompilationContext>()
+                .AddTransient<InMemoryEntityQueryableExpressionVisitor>();
         }
     }
 }
